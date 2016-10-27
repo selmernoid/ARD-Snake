@@ -54,6 +54,8 @@ void GameControllerClass::init(int portX, int portY)
 	this->display.init();
 	joystickPortX = portX;
 	joystickPortY = portY;
+
+	snake.DoStep();
 }
 
 boolean GameControllerClass::HasDirection(int value)
@@ -76,21 +78,27 @@ void GameControllerClass::ReadJoystick()
 }
 void GameControllerClass::Loop()
 {
-	ReadJoystick();
-
-	snake.DoStep();
 	snakeLength = snake.GetLength();
 
-	UpdateDisplay();
-
-	int totalDelay = 600 - 10 * snakeLength;
-	int stepDelay = totalDelay / steps;
-	for (int i = 0; i < steps; i++) {
-		ReadJoystick();
-		display.highlight(i);
-		delay(stepDelay);
+	if (snake.IsLose())
+	{
+		int steps = snake.GetSteps();
+		display.ShowStats(steps, snakeLength);
+		snake.init(3);
 	}
-	//delay(600-10*snakeLength);
+	else {
+		UpdateDisplay();
+
+		int totalDelay = 600 - 10 * snakeLength;
+		int stepDelay = totalDelay / steps;
+		for (int i = 0; i < steps; i++) {
+			ReadJoystick();
+			display.highlight(i);
+			delay(stepDelay);
+		}
+	}
+
+	snake.DoStep();
 }
 
 

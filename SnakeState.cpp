@@ -48,16 +48,18 @@ FieldCellType SnakeStateClass::GetBackwardWay(FieldCellType way)
 SnakeStateClass::SnakeStateClass()
 {
 	this->withBorders = false;
+	this->isLose = false;
 }
 
 SnakeStateClass::SnakeStateClass(boolean withBorders)
 {
 	this->withBorders = withBorders;
+	this->isLose = false;
 }
 
 void SnakeStateClass::Lose()
 {
-	init(3);
+	isLose = true;
 }
 
 void SnakeStateClass::CreateFood()
@@ -77,6 +79,7 @@ void SnakeStateClass::CreateFood()
 
 void SnakeStateClass::DoStep()
 {
+	steps++;
 	Point nextCell = GetNextPoint(End);
 
 	if (nextCell.X < 0 || nextCell.X >= DISPLAY_LENGTH_X ||
@@ -98,8 +101,10 @@ void SnakeStateClass::DoStep()
 		field[Start.X][Start.Y] = Empty;
 		Start = newStart;
 	}
-	else
+	else {
+		length++;
 		CreateFood();
+	}
 	
 	field[nextCell.X][nextCell.Y] = field[End.X][End.Y];
 	backwardWay = GetBackwardWay(field[End.X][End.Y]);
@@ -114,6 +119,9 @@ void SnakeStateClass::ChangeDirection(FieldCellType way)
 
 void SnakeStateClass::init(int startSize)
 {
+	isLose = false;
+	steps = 0;
+
 	for (int i = 0; i < DISPLAY_LENGTH_X; i++)
 		for (int j = 0; j < DISPLAY_LENGTH_Y; j++)
 			field[i][j] = Empty;
@@ -129,9 +137,19 @@ void SnakeStateClass::init(int startSize)
 	CreateFood();
 }
 
-int SnakeStateClass::GetLength() const
+int SnakeStateClass::GetLength()
 {
 	return length;
+}
+
+int SnakeStateClass::GetSteps()
+{
+	return steps;
+}
+
+boolean SnakeStateClass::IsLose()
+{
+	return isLose;
 }
 
 //SnakeStateClass SnakeState;

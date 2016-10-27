@@ -57,5 +57,59 @@ void DisplayControlClass::highlight(int step)
 	}
 }
 
+void DisplayControlClass::ShowStats(int steps, int length)
+{
+	delay(1000);
+	for (int i = 0; i < 64; i++)
+	{
+		lc.setLed(0, i / 8, i % 8, true);
+		delay(25);	
+	}
+	delay(200);
+	lc.clearDisplay(0);
+
+	int digits = length > 9 ? 2 : 1;
+	int *array = new int[digits];	
+	if (digits == 1)
+		array[0] = length;
+	else {
+		array[0] = length / 10;
+		array[1] = length % 10;
+	}
+
+	int rowsCount =
+		(digits) * 6
+		+ (digits - 1) /*пробелы между символами*/
+		+ 2 * 8 /*пустота в начале и в конце*/
+		;// +8 /*чтоб пробежало по всем клеткам*/;
+
+	for (int i = 0; i < rowsCount; i++)
+	{
+		for (int j = 0; j < 8; j++) {
+			if (j + i < 8 || j + i >= rowsCount - 8)
+				lc.setRow(0, j, 0);
+			else {
+				int symbolIdx = (j + i - 8) / (6 + 1);
+				int symbolRow = (j + i - 8) % (6 + 1);
+				if (symbolRow == 6 || symbolIdx > digits)
+					lc.setRow(0, j, 0);
+				else
+				{
+					lc.setRow(0, j, alphabet[array[symbolIdx]][symbolRow]);
+				}					
+			}
+		}
+
+		delay(230);
+	}
+
+	delete[]array;
+
+//	for (int i = 0; i<6; i++) {
+//		lc.setRow(0, i, alphabetBitmap[charIndex][i]);
+//	}
+//	alphabetBitmap[0];
+}
+
 //DisplayControlClass DisplayControl;
 
